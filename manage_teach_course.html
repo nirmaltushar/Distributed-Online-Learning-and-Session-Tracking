@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Teacher Course Management</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f6fa;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #2f3640;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      background-color: #0984e3;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #74b9ff;
+    }
+
+    #response {
+      margin-top: 30px;
+      background: #f1f2f6;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Teacher Course Management</h2>
+
+    <div class="form-group">
+      <label for="t_id">Teacher ID</label>
+      <input type="text" id="t_id" placeholder="Enter Teacher ID">
+    </div>
+
+    <div class="form-group">
+      <label for="course_idt1">Course ID 1</label>
+      <input type="text" id="course_idt1" placeholder="Enter Course ID 1">
+    </div>
+
+    <div class="form-group">
+      <label for="course_idt2">Course ID 2</label>
+      <input type="text" id="course_idt2" placeholder="Enter Course ID 2">
+    </div>
+
+    <div class="form-group">
+      <label for="course_idt3">Course ID 3</label>
+      <input type="text" id="course_idt3" placeholder="Enter Course ID 3">
+    </div>
+
+    <div class="button-group">
+      <button onclick="addTeacherCourse()">Add</button>
+      <button onclick="updateTeacherCourse()">Update</button>
+      <button onclick="deleteTeacherCourse()">Delete</button>
+      <button onclick="displayTeacherCourses()">Display All</button>
+    </div>
+
+    <div id="response"></div>
+    <div id="table-container"></div>
+
+  <script>
+    const apiBase = "http://localhost:3000";
+
+    function getInputData() {
+      return {
+        t_id: document.getElementById("t_id").value,
+        course_idt1: document.getElementById("course_idt1").value,
+        course_idt2: document.getElementById("course_idt2").value,
+        course_idt3: document.getElementById("course_idt3").value,
+      };
+    }
+
+    async function addTeacherCourse() {
+      const data = getInputData();
+      const res = await fetch(`${apiBase}/add_teacher_course`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      showResponse(result);
+    }
+
+    async function updateTeacherCourse() {
+      const data = getInputData();
+      const res = await fetch(`${apiBase}/update_teacher_course`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      showResponse(result);
+    }
+
+    async function deleteTeacherCourse() {
+      const t_id = document.getElementById("t_id").value;
+      const res = await fetch(`${apiBase}/delete_teacher_course`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ t_id })
+      });
+      const result = await res.json();
+      showResponse(result);
+    }
+
+    async function displayTeacherCourses() {
+      const res = await fetch(`${apiBase}/display_teacher_course`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const result = await res.json();
+      showResponse(result);
+    }
+
+    function showResponse(data) {
+      const responseDiv = document.getElementById("response");
+      const tableContainer = document.getElementById("table-container");
+      responseDiv.textContent = "";
+
+      if (Array.isArray(data) && data.length > 0) {
+        const table = document.createElement("table");
+        table.style.width = "100%";
+        table.style.borderCollapse = "collapse";
+        table.style.marginTop = "20px";
+
+        const thead = document.createElement("thead");
+        const headerRow = document.createElement("tr");
+
+        Object.keys(data[0]).forEach(key => {
+          const th = document.createElement("th");
+          th.textContent = key;
+          th.style.border = "1px solid #ccc";
+          th.style.padding = "10px";
+          th.style.backgroundColor = "#dfe6e9";
+          th.style.textAlign = "left";
+          headerRow.appendChild(th);
+        });
+
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+        data.forEach(row => {
+          const tr = document.createElement("tr");
+          Object.values(row).forEach(value => {
+            const td = document.createElement("td");
+            td.textContent = value;
+            td.style.border = "1px solid #ccc";
+            td.style.padding = "10px";
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        tableContainer.innerHTML = "";
+        tableContainer.appendChild(table);
+      } else {
+        tableContainer.innerHTML = "";
+        responseDiv.textContent = typeof data === "object" ? JSON.stringify(data, null, 2) : String(data);
+      }
+    }
+  </script>
+</body>
+</html>

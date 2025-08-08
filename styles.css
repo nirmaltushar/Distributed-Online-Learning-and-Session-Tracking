@@ -1,0 +1,19 @@
+body {
+    background-color: #e9ecef;
+}
+
+h2 {
+    color: #343a40;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.table {
+    margin-top: 20px;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Delete Profile Picture</title>
+</head>
+<body onload="deleteProfilePic()">
+  <h2>Delete Profile Picture</h2>
+  <p id="responseMsg" style="color: green;"></p>
+
+  <!-- Add Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+    async function deleteProfilePic() {
+      let em1 = sessionStorage.getItem("emailS");
+
+      try {
+        const response = await axios.get("http://localhost:3000/studentdashemail", {
+          params: {
+            email: em1
+          }
+        });
+
+        console.log(response.data);
+
+        if (response.data.data && response.data.data.length > 0) {
+          const studentData = response.data.data[0];
+          const userId = studentData.s_id;
+
+          const responseMsg = document.getElementById('responseMsg');
+
+          if (!userId) {
+            alert('User ID not found');
+            return;
+          }
+
+          const deleteResponse = await fetch('http://localhost:3000/remove-profile-pic', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId })
+          });
+
+          const text = await deleteResponse.text();
+          responseMsg.style.color = deleteResponse.ok ? 'green' : 'red';
+          responseMsg.textContent = text;
+        } else {
+          document.getElementById('responseMsg').textContent = 'No user data found.';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('responseMsg').style.color = 'red';
+        document.getElementById('responseMsg').textContent = 'An error occurred while deleting the picture.';
+      }
+    }
+  </script>
+</body>
+</html>

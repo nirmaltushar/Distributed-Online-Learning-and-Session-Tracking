@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function getlink()
+        {
+
+                axios.get("http://localhost:3000/getvideolink")
+                .then(responce=>{
+                    let arr=responce.data;
+                    for(let i=0;i<arr.length;i++)
+                    {
+                        console.log(responce.data);
+                        var rowData="<tr><td>"+arr[i].sr+"</td>";
+                            rowData+="<td>"+arr[i].datee+"</td>";
+                            rowData+="<td>"+arr[i].subject+"</td>";
+                            rowData+="<td>"+arr[i].linke+"</td>";
+                           // rowData +="<td><input type='button' value='COPY LINK' class='btn btn-danger' onclick='del("+arr[i].sr+")';onclick='copyText()'></td>";
+                            rowData+="</tr>";
+    
+                            $('#td').append(rowData);
+    
+                    }
+                })
+            
+    
+        }
+    </script>
+</head>
+<body>
+    <center>
+        <input type="Submit" value="GET LINK" onclick="getlink()">
+        <center>
+            1.Here you will get the link of google form.<br>
+            2.Fill the google form.<br>
+            3.Note:ATTENDANCE WILL BE TRACKED USING GOOGLE FORM<br>
+            4.You will get the meeting link after filling the link of google form.<br>
+            5.Don't forget to click "OUT" in "ACTION".<br>
+            6.If null values get stored in database,ATTENDANCE WILL NOT BE TAKEN
+        </center>
+        <table class="table table-striped" border="solid" background-color="pink">
+            <tr>
+                
+                <th>sr</th>
+                <th>DATE</th>
+                <th>Subject</th>
+                <th>link</th>
+                <!-- <th><button onclick="copyText()">Copy link</button></th> -->
+
+            </tr>
+            <tbody id="td">
+            </tbody>
+ 
+       
+        </table>
+    </center>
+</body>
+</html>

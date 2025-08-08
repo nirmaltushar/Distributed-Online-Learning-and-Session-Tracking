@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="login.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <form action="">
+            <h1>Registration</h1>
+            <center>
+                Enter ID*:<input type="number" id="k1" min="0" oninput="validity.valid||(value='');">
+            </center>
+            <div class="input-box">
+                <input type="text" placeholder="First Name" class="inputbx" id="n1" required>
+                <i class='bx bxs-user' style='color:#fff'  ></i>
+            </div>
+            <div class="input-box">
+                <input type="text" placeholder="Last Name" class="inputbx" id="n2" required>
+                <i class='bx bxs-user' style='color:#fff'  ></i>
+            </div>
+            <div class="input-box">
+                <input type="email" placeholder="Email" class="inputbx" id="n3"  onfocus="showEmailTooltip()" onblur="hideEmailTooltip()" required>
+                <!-- <i class='bx bxs-user' style='color:#fff'></i>-->
+                <div id="emailTooltip" style="display: none; position: absolute; top: 40px; left: 0; background: #333; color: #fff; padding: 5px; border-radius: 5px;">
+                    Enter a valid email (e.g., example@domain.com)
+                </div>
+            </div>
+            <div class="input-box">
+                <input type="text" placeholder="Username" class="inputbx"  id="n4" required>
+                <i class='bx bxs-user' style='color:#fff'  ></i>
+            </div>
+
+
+            <div class="input-box">
+                <input type="password" placeholder="password" class="inputbx" id="n5" required>
+                <i class='bx bxs-lock-alt' style='color:#fff'  ></i>
+            </div>
+
+            <div class="remember-forgot">
+                <label><input type="checkbox">Remember Me</label>
+               <!-- <a href="#">Forgot password?</a>-->
+            </div>
+
+            <input type="button" value="Register" class="btn" onclick="test()">
+
+            <div class="registration-link">
+                <p>Already have an Account?<a href="Studentloginpage.html">Sign in</a><br>
+                *The id should be unique</p>
+            </div>
+        </form>
+    </div>
+    <script>
+        let tooltipShown = false; // flag to check if tooltip was already shown
+
+        function showEmailTooltip() {
+            if (!tooltipShown) {
+                document.getElementById('emailTooltip').style.display = 'block';
+                tooltipShown = true; // set the flag to true after displaying the tooltip once
+            }
+        }
+        
+        function hideEmailTooltip() {
+            document.getElementById('emailTooltip').style.display = 'none';
+        }
+        function test()
+        {
+            let m1=document.getElementById("k1").value;
+            let m2=String(document.getElementById("n1").value);
+            let m3=String(document.getElementById("n2").value);
+            let m4=String(document.getElementById("n3").value);
+            let m5=String(document.getElementById("n4").value);
+            let m6=String(document.getElementById("n5").value);
+
+
+                        // Send POST request to the API endpoint
+                        axios.post("http://localhost:3000/insertstudreg", {
+                            s_id: m1,
+                            first_name: m2,
+                            last_name:m3,
+                            email: m4,
+                            username: m5,
+                            pass: m6
+                        }).then(response => {
+                            // Check the response data and handle accordingly
+                            if(response.data.status == "200" && response.data.message == "Added Sucessfully") {
+                                alert("Student Registration Successful");
+                            } else {
+                                alert("Student Registration Failed");
+                            }
+                        })
+                        .catch(error => {
+                            // Handle any errors during the request
+                            alert("Registration Failed. Critical error.");
+                        });
+        }
+    </script>
+</body>
+</html>

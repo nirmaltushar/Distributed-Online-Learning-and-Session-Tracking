@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: #f2f4f7;
+    }
+
+    h1 {
+      background: linear-gradient(to right, #007BFF, #0056b3);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 0;
+      border-bottom: 3px solid #004a99;
+    }
+
+    .section {
+      background: #fff;
+      padding: 25px;
+      margin: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #333;
+      margin-top: 0;
+    }
+
+    input, button {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #007BFF;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .response {
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Admin Panel - Student & Teacher Management</h1>
+
+  <div class="section">
+    <h2>🔍 View Registered Students</h2>
+    <button onclick="apiCall('POST', '/stud_regis_table')">View Students</button>
+    <div id="stud_regis_table_output" class="response"></div>
+  </div>
+
+  <div class="section">
+    <h2>🗑️ Delete Student</h2>
+    <input type="text" id="delete_student_id" placeholder="Student ID">
+    <button onclick="apiCall('DELETE', '/delete_student', { userId: getValue('delete_student_id') })">Delete Student</button>
+    <div id="delete_student_output" class="response"></div>
+  </div>
+
+  <div class="section">
+    <h2>👨‍🏫 View Teachers</h2>
+    <button onclick="apiCall('POST', '/teach_regis_table')">View Teachers</button>
+    <div id="teach_regis_table_output" class="response"></div>
+  </div>
+
+  <div class="section">
+    <h2>🗑️ Delete Teacher</h2>
+    <input type="text" id="delete_teacher_id" placeholder="Teacher ID">
+    <button onclick="apiCall('DELETE', '/delete_teacher', { userId: getValue('delete_teacher_id') })">Delete Teacher</button>
+    <div id="delete_teacher_output" class="response"></div>
+  </div>
+<!--
+  <div class="section">
+    <h2>📚 Courses Management</h2>
+    <div class="grid">
+      <div>
+        <button onclick="apiCall('POST', '/display_all_course')">Display Courses</button>
+        <div id="display_all_course_output" class="response"></div>
+      </div>
+      <div>
+        <input type="text" id="course_id" placeholder="Course ID">
+        <input type="text" id="course_name" placeholder="Course Name">
+        <button onclick="apiCall('POST', '/add_course', { course_id: getValue('course_id'), course_name: getValue('course_name') })">Add Course</button>
+        <input type="text" id="update_course_id" placeholder="Course ID to Update">
+        <input type="text" id="new_course_name" placeholder="New Course Name">
+        <button onclick="apiCall('PUT', '/update_course_name', { course_id: getValue('update_course_id'), new_course_name: getValue('new_course_name') })">Update Course</button>
+        <input type="text" id="delete_course_id" placeholder="Course ID to Delete">
+        <button onclick="apiCall('DELETE', '/delete_course', { userId: getValue('delete_course_id') })">Delete Course</button>
+      </div>
+    </div>
+    <div id="add_course_output" class="response"></div>
+  </div>-->
+ <!--
+  <div class="section">
+    <h2>🎓 Student Courses</h2>
+    <button onclick="apiCall('POST', '/display_student_course')">View Student Courses</button>
+    <input id="sc1" placeholder="Course ID 1">
+    <input id="sc2" placeholder="Course ID 2">
+    <input id="sc3" placeholder="Course ID 3">
+    <input id="sc4" placeholder="Course ID 4">
+    <input id="sc5" placeholder="Course ID 5">
+    <button onclick="apiCall('POST', '/add_student_course', getSCourses())">Add Student Course</button>
+    <button onclick="apiCall('PUT', '/update_student_course', getSCourses())">Update Student Course</button>
+    <input id="delete_course_ids1" placeholder="Course ID 1 to delete">
+    <button onclick="apiCall('DELETE', '/delete_student_course', { course_ids1: getValue('delete_course_ids1') })">Delete Student Course</button>
+    <div id="student_course_output" class="response"></div>
+  </div>
+
+ <div class="section">
+    <h2>👨‍🏫 Teacher Courses</h2>
+    <button onclick="apiCall('POST', '/display_teacher_course')">View Teacher Courses</button>
+    <input id="tid" placeholder="Teacher ID">
+    <input id="ct1" placeholder="Course ID T1">
+    <input id="ct2" placeholder="Course ID T2">
+    <input id="ct3" placeholder="Course ID T3">
+    <button onclick="apiCall('POST', '/add_teacher_course', getTCourses())">Add Teacher Course</button>
+    <button onclick="apiCall('PUT', '/update_teacher_course', getTCourses())">Update Teacher Course</button>
+    <input id="delete_tid" placeholder="Teacher ID to delete courses">
+    <button onclick="apiCall('DELETE', '/delete_teacher_course', { t_id: getValue('delete_tid') })">Delete Teacher Course</button>
+    <div id="teacher_course_output" class="response"></div>
+  </div>-->
+
+  <script>
+    const getValue = id => document.getElementById(id).value;
+
+    const getSCourses = () => ({
+      course_ids1: getValue('sc1'),
+      course_ids2: getValue('sc2'),
+      course_ids3: getValue('sc3'),
+      course_ids4: getValue('sc4'),
+      course_ids5: getValue('sc5'),
+    });
+
+    const getTCourses = () => ({
+      t_id: getValue('tid'),
+      course_idt1: getValue('ct1'),
+      course_idt2: getValue('ct2'),
+      course_idt3: getValue('ct3'),
+    });
+
+    function createTable(data) {
+      if (!Array.isArray(data)) return `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      if (data.length === 0) return "<p>No records found.</p>";
+      const headers = Object.keys(data[0]);
+      const headerRow = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+      const rows = data.map(row => `<tr>${headers.map(h => `<td>${row[h]}</td>`).join('')}</tr>`);
+      return `<table>${headerRow}${rows.join('')}</table>`;
+    }
+
+    async function apiCall(method, endpoint, data = null) {
+      const url = `http://localhost:3000${endpoint}`;
+      const options = {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+      };
+
+      if (data) options.body = JSON.stringify(data);
+
+      try {
+        const res = await fetch(url, options);
+        const result = await res.json();
+        document.getElementById(`${endpoint.slice(1)}_output`).innerHTML = createTable(result);
+      } catch (err) {
+        alert('Error: ' + err);
+      }
+    }
+  </script>
+</body>
+</html>
+

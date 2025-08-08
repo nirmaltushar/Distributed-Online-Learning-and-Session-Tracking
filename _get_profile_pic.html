@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test Profile Pic</title></head>
+<body>
+  <input type="number" id="userId" placeholder="Enter User ID" />
+  <button onclick="fetchPic()">Get Profile Pic</button>
+  <br/><br/>
+  <img id="profileImage" width="200"/>
+
+  <script>
+    function fetchPic() {
+      const userId = document.getElementById('userId').value;
+
+      fetch('http://localhost:3000/profile-pic', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Image not found");
+        return res.blob();
+      })
+      .then(blob => {
+        const url = URL.createObjectURL(blob);
+        document.getElementById('profileImage').src = url;
+      })
+      .catch(err => {
+        alert(err.message);
+        document.getElementById('profileImage').src = '';
+      });
+    }
+  </script>
+</body>
+</html>

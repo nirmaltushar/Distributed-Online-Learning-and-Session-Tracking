@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Distributed Online Learning System</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="A_S.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-dark text-white text-center py-4">
+        <h1>Distributed Online Learning System</h1>
+        <p>Teacher & Student Login</p>
+        <a href="Adminpanel_login.html"><p>Admin Panel</p></a>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3>Teacher Login</h3>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="adminEmail">Email address</label>
+                                <input type="email" class="form-control" id="adminEmail" placeholder="Enter Teacher email">
+                            </div>
+                            <div class="form-group">
+                                <label for="adminPassword">Password</label>
+                                <input type="password" class="form-control" id="adminPassword" placeholder="Password">
+                            </div>
+                            <!--<a href="#learn-more" class="btn btn-primary btn-block" onclick="window.location.href='Admin_Dashboard.html';">Login</a>-->
+                            <input type="button" value="Login" class="btn btn-primary btn-block" onclick="AdminLog()">
+                            <p>Don't have account?<a href="#" id="teacherRegisterBtn">Register</a></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mt-4 mt-md-0">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white text-center">
+                        <h3>Student Login</h3>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="studentEmail">Email address</label>
+                                <input type="email" class="form-control" id="studentEmail" placeholder="Enter student email">
+                            </div>
+                            <div class="form-group">
+                                <label for="studentPassword">Password</label>
+                                <input type="password" class="form-control" id="studentPassword" placeholder="Password">
+                            </div>
+                           <!-- <button type="submit" class="btn btn-success btn-block">Login</button>-->
+                          <!-- <a href="#learn-more" class="btn btn-primary btn-block" onclick="window.location.href='Dashboard.html';">Login</a>-->
+                          <input type="button" value="Login" class="btn btn-primary btn-block" onclick="StudentLog()">
+                            <p>Don't have account?<a href="#" id="studentRegisterBtn">Register</a></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+        <p>&copy; 2024 Distributed Online Learning System | All rights reserved.</p>
+        <p>Contact us at info@dols.com</p>
+    </footer>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        //Function for admin login
+     /*   function AdminLog() {
+            // Retrieve email and password from input fields
+            let e1 = String(document.getElementById("adminEmail").value);
+            let p1 = String(document.getElementById("adminPassword").value);
+            // Send POST request to the API endpoint
+            axios.post("http://localhost:3000/teacherlogin", {
+                email: e1,
+                pass: p1
+            }).then(response => {
+                // Check the response data and handle accordingly
+                if(response.data.status == "200" && response.data.message == "valid") {
+                    alert("Login Successful");
+
+                    window.location.href='Admin_Dashboard.html';
+                } else {
+                    alert("Login Failed");
+                }
+            })
+            .catch(error => {
+                // Handle any errors during the request
+                alert("Login Failed. Critical error.");
+            });
+        }*/
+
+
+
+                //Function for admin login
+        function AdminLog() {
+            // Retrieve email and password from input fields
+            let e1 = String(document.getElementById("adminEmail").value);
+            let p1 = String(document.getElementById("adminPassword").value);
+            // Send POST request to the API endpoint
+            axios.post("http://localhost:3000/teacherlogin", {
+                email: e1,
+                pass: p1
+            }).then(response => {
+                // Check the response data and handle accordingly
+                if(response.data.status == "200" && response.data.message == "valid") {
+                    alert("Login Successful");
+                    let em=document.getElementById("adminEmail").value;
+                    let pa=document.getElementById("adminPassword").value;
+                    sessionStorage.setItem("emailA",em);
+                    sessionStorage.setItem("passwordA",pa);
+                    window.location.href='Admin_Dashboard.html';
+                } else {
+                    alert("Login Failed");
+                }
+            })
+            .catch(error => {
+                // Handle any errors during the request
+                alert("Login Failed. Critical error.");
+            });
+        }
+ 
+        
+
+
+
+        //Function for Student login
+        function StudentLog() {
+            // Retrieve email and password from input fields
+            let e2 = String(document.getElementById("studentEmail").value);
+            let p2 = String(document.getElementById("studentPassword").value);
+            // Send POST request to the API endpoint
+            axios.post("http://localhost:3000/Studentlogin", {
+                email: e2,
+                pass: p2
+            }).then(response => {
+                // Check the response data and handle accordingly
+                if(response.data.status == "200" && response.data.message == "valid") {
+                    alert("Login Successful");
+                    let email=document.getElementById("studentEmail").value;
+                    let passw=document.getElementById("studentPassword").value;
+                    sessionStorage.setItem("emailS",email);
+                    sessionStorage.setItem("passwordS",passw);
+                    window.location.href='Dashboard.html';
+                } else {
+                    alert("Login Failed");
+                }
+            })
+            .catch(error => {
+                // Handle any errors during the request
+                alert("Login Failed. Critical error.");
+            });
+        } 
+        
+        // Function to show the alert
+function showRegisterMessage() {
+    alert("Registration is possible only through the Admin Panel.");
+}
+
+// Add event listeners to the register buttons
+document.getElementById('teacherRegisterBtn').addEventListener('click', showRegisterMessage);
+document.getElementById('studentRegisterBtn').addEventListener('click', showRegisterMessage);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9f9f9;
+    color: #333;
+  }
+  
+  .container {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  header {
+    text-align: center;
+    padding: 40px 0;
+  }
+  
+  header h1 {
+    margin-bottom: 10px;
+    color: #2c3e50;
+  }
+  
+  .content h2 {
+    margin-top: 30px;
+    color: #34495e;
+  }
+  
+  .content p {
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  
+  .team {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .member {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 10px;
+    flex: 1;
+    min-width: 200px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    text-align: center;
+  }
+  
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 0.9em;
+    color: #777;
+  }
+  

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body onload="fetchdata1()">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">Teacher Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active"></li>
+                    <a class="nav-link" href="room.html">Create Room</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="name_of_students.html">Students</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="Teacher_Profile.html">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="logout1()">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="mb-4">Welcome,<span id="fs1">fs</span>
+                    <span id="ls1">ls</span><br></h1>
+                   <h3> Email:<span id="email11">email</span><br>
+                    User ID:<span id="id1">id</span><br>
+                    Username:<span id="username1">username</span><br>
+                </h3>
+                <a href="stud_upcoming.html" class="fancy-button">
+                    Click Here to Know About Upcoming Events
+                  </a>
+                  
+                <h4>*A teacher can teach maximum 3 subjects.</h4>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Course Taught</h5>
+                        <p class="card-text">Here you can view your List of courses</p>
+                        <table class="table table-bordered">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Course ID</th>
+                                    <th>Course Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id="courseTableBody">
+                                <!-- Data will be injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Students Enrolled In this Course</h5>
+                        <p class="card-text">Here you can see the number of students enrolled in each course.</p>
+                        <table class="table table-bordered">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Course ID</th>
+                                    <th>Course Name</th>
+                                    <th>Number of Students</th>
+                                </tr>
+                            </thead>
+                            <tbody id="courseStudentTableBody">
+                                <!-- Data will be injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom Script to Set Teacher Name -->
+    <script>
+        // Set the teacher's name dynamically
+        let ema=sessionStorage.getItem("emailA");
+        let pwd=sessionStorage.getItem("passwordA");
+       // document.getElementById('teacher-name').innerText = ''+ema; // Replace with actual teacher's name
+       // document.getElementById('teacher-id').innerText = 'USER ID:'+'45';
+
+
+       function fetchdata1() {
+    let ema1 = sessionStorage.getItem("emailA");
+
+    axios.get("http://localhost:3000/teacherdashemail", {
+        params: {
+            email: ema1
+        }
+    })
+    .then(response => {
+        if (response.data.data && response.data.data.length > 0) {
+            const studentData = response.data.data[0];
+
+            document.getElementById("fs1").innerHTML = studentData.first_name;
+            document.getElementById("ls1").innerHTML = studentData.last_name;
+            document.getElementById("email11").innerHTML = studentData.email;
+            document.getElementById("id1").innerHTML = studentData.t_id;
+            document.getElementById("username1").innerHTML = studentData.username;
+
+            const userId = studentData.t_id;
+
+            // Fetch courses taught
+            fetch('http://localhost:3000/teacher_course', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('courseTableBody');
+                tableBody.innerHTML = '';
+
+                if (data.error || data.message) {
+                    tableBody.innerHTML = `<tr><td colspan="2">${data.error || data.message}</td></tr>`;
+                    return;
+                }
+
+                data.forEach(course => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${course.course_id}</td>
+                        <td>${course.course_name}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching courses:', error);
+                document.getElementById('courseTableBody').innerHTML = `<tr><td colspan="2">Error loading courses</td></tr>`;
+            });
+
+            // Fetch student enrollment data
+            fetch("http://localhost:3000/stud_enroll_no", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ userId })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                const tableBody = document.getElementById("courseStudentTableBody");
+                tableBody.innerHTML = "";
+
+                data.forEach(course => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${course.course_id}</td>
+                        <td>${course.course_name}</td>
+                        <td>${course.student_count}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching course data:", error);
+            });
+
+        } else {
+            console.error('No data found for the given email.');
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+    });
+}
+
+       
+
+            //function for logout
+            function logout1()
+            {
+                window.location.href="logout.html";
+                sessionStorage.removeItem("emailA");
+                sessionStorage.removeItem("passwordA");
+                //alert("You are logout");
+            }
+            
+    </script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body onload="fetchdata()">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Online Learning</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="dashboard.html">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Profile</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="get_link.html">Online Lecture</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="about_us.html">About Us</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="logout()">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <img id="profileImage" alt="Profile Picture"/>
+                <button onclick="Upload()">Upload Image</button>
+                <button onclick="Remove()">Remove Image</button><br>
+                <p>Note:Upload Image only in JPEG/JPG Format</p>
+                <h1 class="mb-4">Welcome, <span id="fs">fs</span> <span id="ls">ls</span><br></h1>
+                <h3> 
+                    Email: <span id="email1">email</span><br>
+                    User ID: <span id="id">id</span><br>
+                    Username: <span id="username">username</span><br>
+                </h3>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom Script to Set Student Name -->
+    <script>
+
+        // Set the student's name dynamically using session storage
+        let em=sessionStorage.getItem("emailS");
+        let pw=sessionStorage.getItem("passwordS");
+        
+       // document.getElementById('student-name').innerText = ''+em; // Replace with actual student's name
+        //document.getElementById('student-id').innerText = 'USER ID:'+'45';
+
+        function fetchdata() {
+    let em1 = sessionStorage.getItem("emailS");
+
+    axios.get("http://localhost:3000/studentdashemail", {
+        params: {
+            email: em1 // Send email as query parameter
+        }
+    })
+    .then(response => {
+        console.log(response.data);
+        
+        if (response.data.data && response.data.data.length > 0) {
+            const studentData = response.data.data[0];
+
+            // Update DOM
+            document.getElementById("fs").innerHTML = studentData.first_name;
+            document.getElementById("ls").innerHTML = studentData.last_name;
+            document.getElementById("email1").innerHTML = studentData.email;
+            document.getElementById("id").innerHTML = studentData.s_id;
+            document.getElementById("username").innerHTML = studentData.username;
+
+            // ✅ NOW fetch the profile picture after ID is known
+            const userId = studentData.s_id;
+
+            fetch('http://localhost:3000/profile-pic', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Image not found");
+                return res.blob();
+            })
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                document.getElementById('profileImage').src = url;
+            })
+            .catch(err => {
+                alert(err.message);
+                document.getElementById('profileImage').src = '';
+            });
+
+        } else {
+            console.error('No data found for the given email.');
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+    });
+}
+
+        
+
+        //function for logout
+        function logout()
+        {
+            window.location.href="logout.html";
+            sessionStorage.removeItem("emailS");
+            sessionStorage.removeItem("passwordS");
+            //alert("You are logout");
+        } 
+        //function for Upload Image
+        function Upload()
+        {
+            window.location.href = 'upload_test2.html';  // upload_test2 page
+        }
+
+        //Function to Remove Image
+        function Remove()
+        {
+            alert("Are you Sure you want to Remove Image");
+            window.location.href = 'remove_profile_pic.html';  // remove profile pic page
+        }
+    </script>
+</body>
+</html>

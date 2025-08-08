@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- Axios script -->
+    <link rel="stylesheet" href="Adminpanel_login.css"> <!-- Your CSS for styling -->
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h2>Admin Login</h2>
+            <form id="loginForm" onsubmit="event.preventDefault(); adminlogin();">
+                <!-- Admin ID input field -->
+                <div class="textbox">
+                    <input type="text" id="adminId" placeholder="Administrator ID" required>
+                </div>
+
+                <!-- Admin Password input field -->
+                <div class="textbox">
+                    <input type="password" id="adminPassword" placeholder="Password" required>
+                </div>
+
+                <!-- Submit button -->
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function adminlogin() {
+            // Get the values from the input fields
+            let a1 = document.getElementById("adminId").value;
+            let a2 = document.getElementById("adminPassword").value;
+
+            // Log the values to check they are being retrieved
+            console.log("Admin ID:", a1);
+            console.log("Admin Password:", a2);
+
+            // Send POST request to the API endpoint
+            axios.post("http://localhost:3000/adminlogin", {
+                admin_id: a1,
+                admin_password: a2
+            })
+            .then(response => {
+                console.log("Response:", response);
+                if (response.status === 200 && response.data.message === "valid") {
+                    alert("Login Successful");
+                    let em=document.getElementById("adminId").value;
+                    let pa=document.getElementById("adminPassword").value;
+                    sessionStorage.setItem("emailA",em);
+                    sessionStorage.setItem("passwordA",pa);
+                    window.location.href = 'Main_Admin.html';  // Redirect to admin page
+                } else {
+                    alert("Login Failed: " + response.data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error during login:", error);
+                alert("Login Failed. Critical error.");
+            });
+        }
+    </script>
+</body>
+</html>
+

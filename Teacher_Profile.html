@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body onload="fetchdata1()">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">Teacher Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="room.html">Create Room</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="Admin_Dashboard.html">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="name_of_students.html">Students</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="logout1()">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <img id="teacherProfilePic" src="https://via.placeholder.com/200?text=No+Image" alt="Profile Picture"
+                    style="max-width: 200px; border-radius: 50%;" /><br>
+                <button id="deleteProfilePicBtn" class="btn btn-danger mt-2">Delete Profile Picture</button>
+                <form id="uploadForm" enctype="multipart/form-data" class="mt-3">
+                    <input type="file" name="profilePic" accept="image/*" required />
+                    <button type="submit" class="btn btn-primary ml-2">Upload Profile Picture</button>
+                </form>
+                <h1 class="mt-4">Welcome, <span id="fs1">First</span> <span id="ls1">Last</span></h1>
+                <h3>
+                    Email: <span id="email11">email@example.com</span><br>
+                    User ID: <span id="id1">id</span><br>
+                    Username: <span id="username1">username</span>
+                </h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Custom Script -->
+    <script>
+        function fetchdata1() {
+            const ema1 = sessionStorage.getItem("emailA");
+
+            axios.get("http://localhost:3000/teacherdashemail", {
+                params: { email: ema1 }
+            })
+                .then(response => {
+                    if (response.data.data && response.data.data.length > 0) {
+                        const studentData = response.data.data[0];
+
+                        // Populate user details
+                        document.getElementById("fs1").innerHTML = studentData.first_name;
+                        document.getElementById("ls1").innerHTML = studentData.last_name;
+                        document.getElementById("email11").innerHTML = studentData.email;
+                        document.getElementById("id1").innerHTML = studentData.t_id;
+                        document.getElementById("username1").innerHTML = studentData.username;
+
+                        // Upload profile picture
+                        document.getElementById('uploadForm').addEventListener('submit', async function (e) {
+                            e.preventDefault();
+
+                            const formData = new FormData(this);
+                            formData.set('userId', studentData.t_id);
+
+                            try {
+                                const response = await fetch('http://localhost:3000/upload-teachprofile-pic', {
+                                    method: 'POST',
+                                    body: formData
+                                });
+
+                                const result = await response.json();
+                                alert(result.message);
+
+                                fetchProfilePic(studentData.t_id);
+                            } catch (error) {
+                                console.error('Error uploading image:', error);
+                                alert('Failed to upload image.');
+                            }
+                        });
+
+                        // Fetch initial profile pic
+                        fetchProfilePic(studentData.t_id);
+
+                        // Delete profile pic
+                        document.getElementById('deleteProfilePicBtn').addEventListener('click', async function () {
+                            if (!confirm("Are you sure you want to delete your profile picture?")) return;
+
+                            try {
+                                const response = await fetch('http://localhost:3000/remove-teacherprofile-pic', {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ userId: studentData.t_id })
+                                });
+
+                                const resultText = await response.text();
+                                alert(resultText);
+                                document.getElementById('teacherProfilePic').src = "https://via.placeholder.com/200?text=No+Image";
+                            } catch (error) {
+                                console.error('Error deleting profile picture:', error);
+                                alert('Failed to delete profile picture.');
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching teacher data:", error);
+                });
+        }
+
+        function fetchProfilePic(userId) {
+            fetch('http://localhost:3000/teachprofile-pic-get', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId })
+            })
+                .then(async res => {
+                    if (!res.ok) throw new Error('Image not found');
+                    const blob = await res.blob();
+                    const imageUrl = URL.createObjectURL(blob);
+                    document.getElementById('teacherProfilePic').src = imageUrl;
+                })
+                .catch(err => {
+                    console.error('Error loading profile picture:', err);
+                    document.getElementById('teacherProfilePic').src = "https://via.placeholder.com/200?text=No+Image";
+                });
+        }
+
+        function logout1() {
+            sessionStorage.removeItem("emailA");
+            sessionStorage.removeItem("passwordA");
+            window.location.href = "logout.html";
+        }
+    </script>
+</body>
+</html>
+

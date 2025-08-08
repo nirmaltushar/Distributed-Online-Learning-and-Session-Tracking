@@ -1,0 +1,16 @@
+body {
+    background: url('online_education_background.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+header {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+footer {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+main {
+    background: rgba(0, 0, 0, 0.6);
+}

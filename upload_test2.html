@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload Profile Picture</title>
+  <link rel="stylesheet" href="upload_test.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>Upload Profile Picture</h2>
+    <form id="uploadForm">
+      <label for="profilePic">Select Profile Picture:</label>
+      <input type="file" id="profilePic" name="profilePic" accept="image/*" required>
+      <button type="submit">Upload</button>
+    </form>
+
+    <div id="message"></div>
+  </div>
+
+  <script src="upload_test.js"></script>
+</body>
+</html>

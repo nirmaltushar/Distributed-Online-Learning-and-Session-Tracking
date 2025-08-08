@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body onload="fetchdata()">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Online Learning</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="PROFILE_page.html">Profile</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="get_link.html">Online Lecture</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="about_us.html">About Us</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="logout()">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="mb-4">Welcome,<span id="fs">fs</span>
+                    <span id="ls">ls</span><br></h1>
+                   <h3> Email:<span id="email1">email</span><br>
+                    User ID:<span id="id">id</span><br>
+                    Username:<span id="username">username</span><br>
+                </h3>
+                <a href="stud_upcoming.html" class="fancy-button">
+                    Click Here to Know About Upcoming Events
+                  </a>
+                <h4>*A single student can enroll in maximum 5 Courses</h4>
+                    
+
+
+
+
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Current Semester Marksheet</h5>
+                        <p class="card-text">Here you can view your Insem and Endsem marks</p>
+                        <table class="table table-bordered">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Course ID</th>
+                                    <th>Insem</th>
+                                    <th>Endsem</th>
+                                    <th>Total</th>
+                                    <th>Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody id="marksheet-body">
+                                <!-- Data will be inserted here dynamically -->
+                            </tbody>                            
+                        </table>
+                    </div>
+                </div><br><br>
+
+
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                      <h5 class="card-title">Student Enrolled in Following Subjects</h5>
+                      <p class="card-text">Here you can view your Course ID and Course Name</p>
+                      <table class="table table-bordered">
+                        <thead class="thead-dark">
+                          <tr>
+                            <th>Course ID</th>
+                            <th>Course Name</th>
+                          </tr>
+                        </thead>
+                        <tbody id="course-table-body">
+                          <!-- Dynamic rows go here -->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom Script to Set Student Name -->
+    <script>
+
+        // Set the student's name dynamically using session storage
+        let em=sessionStorage.getItem("emailS");
+        let pw=sessionStorage.getItem("passwordS");
+        
+       // document.getElementById('student-name').innerText = ''+em; // Replace with actual student's name
+        //document.getElementById('student-id').innerText = 'USER ID:'+'45';
+
+        function fetchdata() {
+    let em1 = sessionStorage.getItem("emailS");
+
+    axios.get("http://localhost:3000/studentdashemail", {
+        params: { email: em1 }
+    })
+    .then(response => {
+        if (response.data.data && response.data.data.length > 0) {
+            const studentData = response.data.data[0];
+
+            document.getElementById("fs").innerHTML = studentData.first_name;
+            document.getElementById("ls").innerHTML = studentData.last_name;
+            document.getElementById("email1").innerHTML = studentData.email;
+            document.getElementById("id").innerHTML = studentData.s_id;
+            document.getElementById("username").innerHTML = studentData.username;
+
+            const userId = studentData.s_id;
+
+            // ✅ Fetching marksheet
+            fetch('http://localhost:3000/student_marksheet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('marksheet-body');
+                tableBody.innerHTML = '';
+
+                data.forEach(record => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.s_id}</td>
+                        <td>${record.course_id}</td>
+                        <td>${record.insem}</td>
+                        <td>${record.endsem}</td>
+                        <td>${record.total}</td>
+                        <td>${record.grade}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching marksheet:', error);
+            });
+
+            // ✅ Fetching enrolled courses
+            fetch('http://localhost:3000/student_course', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const courseTableBody = document.getElementById('course-table-body');
+                courseTableBody.innerHTML = '';
+
+                if (data.length === 0) {
+                    courseTableBody.innerHTML = '<tr><td colspan="2">No courses found.</td></tr>';
+                    return;
+                }
+
+                data.forEach(course => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${course.course_id}</td>
+                        <td>${course.course_name}</td>
+                    `;
+                    courseTableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching course data:', error);
+                document.getElementById('course-table-body').innerHTML = '<tr><td colspan="2">Failed to load data.</td></tr>';
+            });
+
+        } else {
+            console.error('No data found for the given email.');
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+    });
+}
+
+        
+
+        //function for logout
+        function logout()
+        {
+            window.location.href="logout.html";
+            sessionStorage.removeItem("emailS");
+            sessionStorage.removeItem("passwordS");
+            //alert("You are logout");
+        } 
+    </script>
+</body>
+</html>
